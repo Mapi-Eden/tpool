@@ -13,9 +13,8 @@ In Dynamis it will show relic armor slot & job.
 
 # TO-DO
 - [ ] Windower Support
-
 - [ ] Add item Timer. How long till item leaves pool
-
+- [ ] Custom Item list's
 - [ ] Custom Colors
 
 
