@@ -1,12 +1,14 @@
 
 
 
+
 # Treasure-Pool
 FFXI addon for both Ashita and Windower.
 will show you what is in the treasure pool.
 In Dynamis it will show relic armor slot & job.
 
-![tpool](https://github.com/user-attachments/assets/37c2d583-963a-43dd-a95c-a8d6960d546e)
+![tpool](https://github.com/user-attachments/assets/31c97042-17b1-4024-827d-8d69542fddbd)
 
-![dyna](https://github.com/user-attachments/assets/ea8c6e97-7086-421f-82df-7408aee8b3ac)
+![dyna](https://github.com/user-attachments/assets/32f7ba65-fd09-4d98-8208-220947628906)
+
 ## DISCLAIMER: I am not part of the eden team. Just a player.
