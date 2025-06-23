@@ -93,23 +93,21 @@ function Draw_Box()
                             local Name = dyna_item.name
                             local Slot = dyna_item.slot
                             local Job = dyna_item.job
-                            local lot = treasure_item.WinningLot
                             if(treasure_item.WinningLotterName ~= "") then
                                 local winner = treasure_item.WinningLotterName
                                 --|cFFfc7b03| Orange
                                 --|cFF42bff5| blue 
                                 --|cFF98f542| green
                                 --|cFFca03fc| purple
-                                box_text = box_text .. string.format("\n|cFF42bff5|[%i]|cFF98f542| %s - %s - %s (|cFFfc7b03|%s - %i|cFF98f542|)",i,Name, Job,Slot,winner,lot)
+                                box_text = box_text .. string.format("\n|cFF42bff5|[%i]|cFF98f542| %s - %s - %s (|cFFfc7b03|%s|cFF98f542|)",i,Name, Job,Slot,winner)
                             else
                                 box_text = box_text .. string.format("\n|cFF42bff5|[%i]|cFF98f542| %s - %s - %s",i,Name, Job,Slot)
                             end
                         else
                             local Name = item.Name[0]
-                            local lot = treasure_item.WinningLot
                             if(treasure_item.WinningLotterName ~= "") then
                                 local winner = treasure_item.WinningLotterName
-                                box_text = box_text .. string.format("\n|cFF42bff5|[%i]|cFF98f542| %s (|cFFfc7b03|%s - %i|cFF98f542|)",i,Name,winner,lot)
+                                box_text = box_text .. string.format("\n|cFF42bff5|[%i]|cFF98f542| %s (|cFFfc7b03|%s|cFF98f542|)",i,Name,winner)
                             else
                                 box_text = box_text .. string.format("\n|cFF42bff5|[%i]|cFF98f542| %s",i,Name)
                             end
