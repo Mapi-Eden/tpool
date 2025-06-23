@@ -11,4 +11,9 @@ In Dynamis it will show relic armor slot & job.
 
 ![dyna](https://github.com/user-attachments/assets/32f7ba65-fd09-4d98-8208-220947628906)
 
-## DISCLAIMER: I am not part of the eden team. Just a player.
+#TO-Do
+-Windower Support
+-Add item Timer. How long till item leaves pool
+-Custom Colors
+
+DISCLAIMER: I am not part of the eden team. Just a player.
