@@ -1,6 +1,6 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.7'
+_addon.version = '5.0.9'
 
 if(ashita)then
     print("Ashita")
