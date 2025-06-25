@@ -1,19 +1,32 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.9'
+_addon.version = '5.0.10'
 
 if(ashita)then
     print("Ashita")
     require 'common'
     require 'core'
+    Countdown =  require 'time_functions'
 end
 if(windower)then
     print("Windower")
 end
 
 require 'tpool_functions'
-require 'dyna_items'
+require 'items'
 
+local Treasure_Time = {
+    [0] = {ItemId = nil, Time = nil, Drop_Time = nil},
+    [1] = {ItemId = nil, Time = nil, Drop_Time = nil},
+    [2] = {ItemId = nil, Time = nil, Drop_Time = nil},
+    [3] = {ItemId = nil, Time = nil, Drop_Time = nil},
+    [4] = {ItemId = nil, Time = nil, Drop_Time = nil},
+    [5] = {ItemId = nil, Time = nil, Drop_Time = nil},
+    [6] = {ItemId = nil, Time = nil, Drop_Time = nil},
+    [7] = {ItemId = nil, Time = nil, Drop_Time = nil},
+    [8] = {ItemId = nil, Time = nil, Drop_Time = nil},
+    [9] = {ItemId = nil, Time = nil, Drop_Time = nil}
+}
 
 local default_config =
 {
@@ -25,10 +38,9 @@ local default_config =
         position    = { 50, 125 },
         bgcolor     = 0x80000000,
         bgvisible   = true
-    },
-    activeDyna = false
+    }
 };
-local dyna_config = default_config
+local pool_config = default_config
 local local_pool = {
     [0] = {Name = nil, ItemId = nil},
     [1] = {Name = nil, ItemId = nil},
@@ -41,6 +53,27 @@ local local_pool = {
     [8] = {Name = nil, ItemId = nil},
     [9] = {Name = nil, ItemId = nil}
 }
+
+function Time_To_Drop(future_time)
+    if(future_time == nil) then
+        return nil
+    else
+        local current_time = os.time()
+        local time_to_drop = future_time - current_time
+        local minutes_left = math.floor(time_to_drop / 60)
+        local seconds_left = time_to_drop % 60
+        if(seconds_left<10) then
+            seconds_left = '0' .. seconds_left
+        end
+        return string.format("%s:%s",tostring(minutes_left),tostring(seconds_left))
+    end
+end
+function Future_Time(futuretime)
+    local current_time = os.time()
+    local futuretime = current_time + futuretime
+    local time_string = os.date("%I:%M:%S",futuretime)
+    return time_string
+end
 
 function HowLongAgo(date)
     local msg = "";
@@ -77,8 +110,7 @@ end
 
 function Draw_Box()
     local area = AshitaCore:GetResourceManager():GetString("areas",AshitaCore:GetDataManager():GetParty():GetMemberZone(0))
-    local in_dyna = string.startswith(area,"Dyna")
-    local dyna_box = AshitaCore:GetFontManager():Get('__dyna_box');
+    local pool_box = AshitaCore:GetFontManager():Get('__pool_box');
     local box_text = string.format('|cFF00FF00|Loot Table - (|cFFFFFF00|%s|cFF00FF00|)', area)
     local playerEntity = GetPlayerEntity()
     if(playerEntity) then
@@ -88,64 +120,72 @@ function Draw_Box()
             if(treasure_item) then
                 local item = AshitaCore:GetResourceManager():GetItemById(treasure_item.ItemId)
                 if(item) then
-                    if(in_dyna == true and table.haskey(Dyna_Items,item.ItemId) == true)then
-                            local dyna_item = Dyna_Items[item.ItemId]
-                            local Name = dyna_item.name
-                            local Slot = dyna_item.slot
-                            local Job = dyna_item.job
-                            local lot = treasure_item.WinningLot
-                            if(treasure_item.WinningLotterName ~= "") then
-                                local winner = treasure_item.WinningLotterName
-                                --|cFFfc7b03| Orange
-                                --|cFF42bff5| blue 
-                                --|cFF98f542| green
-                                --|cFFca03fc| purple
-                                box_text = box_text .. string.format("\n|cFF42bff5|[%i]|cFF98f542| %s - %s - %s (|cFFfc7b03|%s - %i|cFF98f542|)",i,Name, Job,Slot,winner,lot)
-                            else
-                                box_text = box_text .. string.format("\n|cFF42bff5|[%i]|cFF98f542| %s - %s - %s",i,Name, Job,Slot)
+                    if(table.haskey(Item_List,item.ItemId) == true)then
+                        local item = Item_List[item.ItemId]
+                        local Name = item.name
+                        local Slot = item.slot
+                        local Job = item.job
+                        local lot = treasure_item.WinningLot
+                        if(treasure_item.WinningLotterName ~= "") then
+                            local winner = treasure_item.WinningLotterName
+                            local drop_time = Time_To_Drop(Treasure_Time[i].Drop_Time)
+                            --|cFFfc7b03| Orange
+                            --|cFF42bff5| blue 
+                            --|cFF98f542| green
+                            --|cFFca03fc| purple
+                            box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s - %s - %s (|cFFfc7b03|%s - %i|cFF98f542|)",drop_time,Name, Job,Slot,winner,lot)
+                        else
+                            local drop_time = Time_To_Drop(Treasure_Time[i].Drop_Time)
+                            box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s - %s - %s",drop_time,Name, Job,Slot)
+                        end
+                    else
+                        local Name = item.Name[0]
+                        local lot = treasure_item.WinningLot
+                        if(treasure_item.WinningLotterName ~= "") then
+                            local winner = treasure_item.WinningLotterName
+                            local drop_time = Time_To_Drop(Treasure_Time[i].Drop_Time)
+                            if(drop_time) then
+                            box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s (|cFFfc7b03|%s - %i|cFF98f542|)",drop_time,Name,winner,lot)
                             end
                         else
-                            local Name = item.Name[0]
-                            local lot = treasure_item.WinningLot
-                            if(treasure_item.WinningLotterName ~= "") then
-                                local winner = treasure_item.WinningLotterName
-                                box_text = box_text .. string.format("\n|cFF42bff5|[%i]|cFF98f542| %s (|cFFfc7b03|%s - %i|cFF98f542|)",i,Name,winner,lot)
-                            else
-                                box_text = box_text .. string.format("\n|cFF42bff5|[%i]|cFF98f542| %s",i,Name)
+                            local drop_time = Time_To_Drop(Treasure_Time[i].Drop_Time)
+                            if(drop_time) then
+                            box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s",drop_time,Name)
                             end
+                        end
                     end
                 end
             end
         end
-        dyna_box:SetText(box_text);
+        pool_box:SetText(box_text);
     end
 end
 
 
 ashita.register_event('load', function()
-    dyna_config = ashita.settings.load_merged(_addon.path .. 'settings/settings.json', dyna_config);
-    local dyna_box = AshitaCore:GetFontManager():Create('__dyna_box');
-    dyna_box:SetColor(dyna_config.font.color);
-    dyna_box:SetFontFamily(dyna_config.font.family);
-    dyna_box:SetFontHeight(dyna_config.font.size);
-    dyna_box:SetBold(false);
-    dyna_box:SetPositionX(dyna_config.font.position[1]);
-    dyna_box:SetPositionY(dyna_config.font.position[2]);
-    dyna_box:SetText('Loot Table');
-    dyna_box:SetVisibility(true);
-    dyna_box:GetBackground():SetColor(dyna_config.font.bgcolor);
-    dyna_box:GetBackground():SetVisibility(dyna_config.font.bgvisible);
+    pool_config = ashita.settings.load_merged(_addon.path .. 'settings/settings.json', pool_config);
+    local pool_box = AshitaCore:GetFontManager():Create('__pool_box');
+    pool_box:SetColor(pool_config.font.color);
+    pool_box:SetFontFamily(pool_config.font.family);
+    pool_box:SetFontHeight(pool_config.font.size);
+    pool_box:SetBold(false);
+    pool_box:SetPositionX(pool_config.font.position[1]);
+    pool_box:SetPositionY(pool_config.font.position[2]);
+    pool_box:SetText('Loot Table');
+    pool_box:SetVisibility(true);
+    pool_box:GetBackground():SetColor(pool_config.font.bgcolor);
+    pool_box:GetBackground():SetVisibility(pool_config.font.bgvisible);
 end);
 
 ashita.register_event('unload', function()
-    local dyna_box = AshitaCore:GetFontManager():Create('__dyna_box');
-    dyna_config.font.position = { dyna_box:GetPositionX(), dyna_box:GetPositionY() };
+    local pool_box = AshitaCore:GetFontManager():Create('__pool_box');
+    pool_config.font.position = { pool_box:GetPositionX(), pool_box:GetPositionY() };
         
     -- Save the configuration..
-    ashita.settings.save(_addon.path .. 'settings/settings.json', dyna_config);
+    ashita.settings.save(_addon.path .. 'settings/settings.json', pool_config);
     
     -- Unload our font object..
-    AshitaCore:GetFontManager():Delete('__dyna_box');
+    AshitaCore:GetFontManager():Delete('__pool_box');
 end);
 
 
@@ -158,4 +198,24 @@ ashita.register_event('render', function()
     if(playerEntity) then
         Draw_Box()
     end
+end);
+
+ashita.register_event('incoming_packet', function(id, size, packet, packet_modified, blocked)
+    local playerEntity = GetPlayerEntity()
+    if (id == 0x0D2) then --Item Dropped Packet
+		if (playerEntity == nil) then
+			return false
+		end
+		local packet_data = {
+			Dropper = struct.unpack('I', packet, 0x08),
+			Count = struct.unpack('I', packet, 0x0C),
+			Item = struct.unpack('H', packet, 0x10+1),
+			Dropper_Index = struct.unpack('H', packet, 0x12),
+			Index = struct.unpack('h', packet, 0x14+1)
+		}
+    Treasure_Time[packet_data.Index].ItemId = packet_data.Item
+    Treasure_Time[packet_data.Index].Time = os.time()
+    Treasure_Time[packet_data.Index].Drop_Time = os.time() + (5*60)
+    end
+    return false
 end);
