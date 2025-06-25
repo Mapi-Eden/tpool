@@ -1,3 +1,7 @@
 settings/
 tpool-testing.lua
 dyna_items.lua
+/dyna_items.lua
+/tpool-testing.lua
+/settings
+/.vscode
