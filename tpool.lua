@@ -1,6 +1,6 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.10'
+_addon.version = '5.0.11'
 
 if(ashita)then
     print("Ashita")
@@ -54,7 +54,11 @@ local local_pool = {
     [9] = {Name = nil, ItemId = nil}
 }
 
-function Time_To_Drop(future_time)
+
+
+
+function Time_To_Drop(future_time,h,m)
+    
     if(future_time == nil) then
         return nil
     else
@@ -229,7 +233,7 @@ ashita.register_event('incoming_packet', function(id, size, packet, packet_modif
         if(packet_data.Item~=nil) then
             Treasure_Time[packet_data.Index].ItemId = packet_data.Item
             Treasure_Time[packet_data.Index].Time = os.time()
-            Treasure_Time[packet_data.Index].Drop_Time = os.time() + (5*60)
+            Treasure_Time[packet_data.Index].Drop_Time = os.time() + (5*61)
         end
         
     end
