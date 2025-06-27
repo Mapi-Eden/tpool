@@ -117,6 +117,7 @@ function Draw_Box()
 
         for i = 0, 9, 1 do
             local treasure_item = AshitaCore:GetDataManager():GetInventory():GetTreasureItem(i)
+            local drop_time = Time_To_Drop(Treasure_Time[i].Drop_Time)
             if(treasure_item) then
                 local item = AshitaCore:GetResourceManager():GetItemById(treasure_item.ItemId)
                 if(item) then
@@ -128,29 +129,41 @@ function Draw_Box()
                         local lot = treasure_item.WinningLot
                         if(treasure_item.WinningLotterName ~= "") then
                             local winner = treasure_item.WinningLotterName
-                            local drop_time = Time_To_Drop(Treasure_Time[i].Drop_Time)
+                            
                             --|cFFfc7b03| Orange
                             --|cFF42bff5| blue 
                             --|cFF98f542| green
                             --|cFFca03fc| purple
-                            box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s - %s - %s (|cFFfc7b03|%s - %i|cFF98f542|)",drop_time,Name, Job,Slot,winner,lot)
+                            if(drop_time~=nil) then
+                                box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s - %s - %s (|cFFfc7b03|%s - %i|cFF98f542|)",drop_time,Name, Job,Slot,winner,lot)
+                            else
+                                box_text = box_text .. string.format("\n|cFF42bff5|[n/a]|cFF98f542| %s - %s - %s (|cFFfc7b03|%s - %i|cFF98f542|)",Name, Job,Slot,winner,lot)
+                            end
                         else
-                            local drop_time = Time_To_Drop(Treasure_Time[i].Drop_Time)
-                            box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s - %s - %s",drop_time,Name, Job,Slot)
+                            
+                            if(drop_time~=nil) then
+                                box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s - %s - %s",drop_time,Name, Job,Slot)
+                            else
+                                box_text = box_text .. string.format("\n|cFF42bff5|[n/a]|cFF98f542| %s - %s - %s",Name, Job,Slot)
+                            end
                         end
                     else
                         local Name = item.Name[0]
                         local lot = treasure_item.WinningLot
                         if(treasure_item.WinningLotterName ~= "") then
                             local winner = treasure_item.WinningLotterName
-                            local drop_time = Time_To_Drop(Treasure_Time[i].Drop_Time)
+                            
                             if(drop_time) then
-                            box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s (|cFFfc7b03|%s - %i|cFF98f542|)",drop_time,Name,winner,lot)
+                                box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s (|cFFfc7b03|%s - %i|cFF98f542|)",drop_time,Name,winner,lot)
+                            else
+                                box_text = box_text .. string.format("\n|cFF42bff5|[n/a]|cFF98f542| %s (|cFFfc7b03|%s - %i|cFF98f542|)",Name,winner,lot)
                             end
                         else
-                            local drop_time = Time_To_Drop(Treasure_Time[i].Drop_Time)
+                            
                             if(drop_time) then
-                            box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s",drop_time,Name)
+                                box_text = box_text .. string.format("\n|cFF42bff5|[%s]|cFF98f542| %s",drop_time,Name)
+                            else
+                                box_text = box_text .. string.format("\n|cFF42bff5|[n/a]|cFF98f542| %s",Name)
                             end
                         end
                     end
@@ -213,13 +226,12 @@ ashita.register_event('incoming_packet', function(id, size, packet, packet_modif
             Dropper_Index = struct.unpack('H', packet, 0x12),
             Index = struct.unpack('h', packet, 0x14+1)
         }
-        if(packet_data.Item>0)then
-            if(Treasure_Time[packet_data.Index].ItemId~=nil) then
-                Treasure_Time[packet_data.Index].ItemId = packet_data.Item
-                Treasure_Time[packet_data.Index].Time = os.time()
-                Treasure_Time[packet_data.Index].Drop_Time = os.time() + (5*60)
-            end
+        if(packet_data.Item~=nil) then
+            Treasure_Time[packet_data.Index].ItemId = packet_data.Item
+            Treasure_Time[packet_data.Index].Time = os.time()
+            Treasure_Time[packet_data.Index].Drop_Time = os.time() + (5*60)
         end
+        
     end
     return false
 end);
