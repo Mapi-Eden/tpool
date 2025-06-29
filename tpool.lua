@@ -1,12 +1,12 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.11'
+_addon.version = '5.0.13'
 
 if(ashita)then
     print("Ashita")
     require 'common'
     require 'core'
-    Countdown =  require 'time_functions'
+
 end
 if(windower)then
     print("Windower")
@@ -57,7 +57,7 @@ local local_pool = {
 
 
 
-function Time_To_Drop(future_time,h,m)
+function Time_To_Drop(future_time,split)
     
     if(future_time == nil) then
         return nil
@@ -69,7 +69,11 @@ function Time_To_Drop(future_time,h,m)
         if(seconds_left<10) then
             seconds_left = '0' .. seconds_left
         end
-        return string.format("%s:%s",tostring(minutes_left),tostring(seconds_left))
+        if(split == true)then
+            return minutes_left,seconds_left
+        else
+            return string.format("%s:%s",tostring(minutes_left),tostring(seconds_left))
+        end
     end
 end
 function Future_Time(futuretime)
@@ -231,11 +235,15 @@ ashita.register_event('incoming_packet', function(id, size, packet, packet_modif
             Index = struct.unpack('h', packet, 0x14+1)
         }
         if(packet_data.Item~=nil) then
+            if packet_data.Item==nil then
+            else
             Treasure_Time[packet_data.Index].ItemId = packet_data.Item
             Treasure_Time[packet_data.Index].Time = os.time()
             Treasure_Time[packet_data.Index].Drop_Time = os.time() + (5*61)
+            end
         end
         
     end
+
     return false
 end);
