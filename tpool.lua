@@ -1,6 +1,6 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.13'
+_addon.version = '5.0.13.1'
 
 if(ashita)then
     print("Ashita")
@@ -220,30 +220,31 @@ ashita.register_event('render', function()
         Draw_Box()
     end
 end);
-
-ashita.register_event('incoming_packet', function(id, size, packet, packet_modified, blocked)
-    local playerEntity = GetPlayerEntity()
-    if (id == 0x0D2) then --Item Dropped Packet
-        if (playerEntity == nil) then
-            return false
-        end
-        local packet_data = {
-            Dropper = struct.unpack('I', packet, 0x08),
-            Count = struct.unpack('I', packet, 0x0C),
-            Item = struct.unpack('H', packet, 0x10+1),
-            Dropper_Index = struct.unpack('H', packet, 0x12),
-            Index = struct.unpack('h', packet, 0x14+1)
-        }
-        if(packet_data.Item~=nil) then
-            if packet_data.Item==nil then
-            else
-            Treasure_Time[packet_data.Index].ItemId = packet_data.Item
-            Treasure_Time[packet_data.Index].Time = os.time()
-            Treasure_Time[packet_data.Index].Drop_Time = os.time() + (5*61)
+if(GetPlayerEntity()) then
+    ashita.register_event('incoming_packet', function(id, size, packet, packet_modified, blocked)
+        local playerEntity = GetPlayerEntity()
+        if (id == 0x0D2) then --Item Dropped Packet
+            if (playerEntity == nil) then
+                return false
             end
-        end
-        
-    end
+            local packet_data = {
+                Dropper = struct.unpack('I', packet, 0x08),
+                Count = struct.unpack('I', packet, 0x0C),
+                Item = struct.unpack('H', packet, 0x10+1),
+                Dropper_Index = struct.unpack('H', packet, 0x12),
+                Index = struct.unpack('h', packet, 0x14+1)
+            }
+            if(packet_data.Item~=0) then
+                print(packet_data.Index)
+                print(packet_data.Item)
+                Treasure_Time[packet_data.Index].ItemId = packet_data.Item
 
-    return false
-end);
+                Treasure_Time[packet_data.Index].Time = os.time()
+                Treasure_Time[packet_data.Index].Drop_Time = os.time() + (5*61)
+            end
+            
+        end
+
+        return false
+    end);
+end
