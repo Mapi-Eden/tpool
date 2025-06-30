@@ -1,6 +1,6 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.13.1'
+_addon.version = '5.0.13.2'
 
 if(ashita)then
     print("Ashita")
@@ -235,8 +235,7 @@ if(GetPlayerEntity()) then
                 Index = struct.unpack('h', packet, 0x14+1)
             }
             if(packet_data.Item~=0) then
-                print(packet_data.Index)
-                print(packet_data.Item)
+           
                 Treasure_Time[packet_data.Index].ItemId = packet_data.Item
 
                 Treasure_Time[packet_data.Index].Time = os.time()
