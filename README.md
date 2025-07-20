@@ -13,8 +13,11 @@ In Dynamis it will show relic armor slot & job.
 
 # T-Pool Timer 
 -/tp start - Starts 60 Minute Timer
+
 -/tp stop - Stops Timer
+
 -/tp reset - Resets Timer
+
 -/tp te MINUTES - Add Number of Minutes to Timer
 
 
