@@ -2,6 +2,7 @@
 
 
 
+
 # Treasure-Pool
 FFXI addon for both Ashita and Windower.
 will show you what is in the treasure pool.
@@ -12,6 +13,8 @@ In Dynamis it will show relic armor slot & job.
 ![dyna](https://github.com/user-attachments/assets/32f7ba65-fd09-4d98-8208-220947628906)
 
 # T-Pool Timer 
+<img width="289" height="49" alt="time" src="https://github.com/user-attachments/assets/d04fd4dd-7cb4-4ab7-90cb-1813e4a074c8" />
+
 -/tp start - Starts 60 Minute Timer
 
 -/tp stop - Stops Timer
