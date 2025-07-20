@@ -1,12 +1,11 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.13.3'
+_addon.version = '5.0.14.1'
 
 if(ashita)then
     print("Ashita")
     require 'common'
     require 'core'
-    Countdown =  require 'time_functions'
 end
 if(windower)then
     print("Windower")
@@ -38,7 +37,12 @@ local default_config =
         position    = { 50, 125 },
         bgcolor     = 0x80000000,
         bgvisible   = true
+    },
+    dyna_timer = {
+        active = false,
+        value = 0
     }
+
 };
 local pool_config = default_config
 local local_pool = {
@@ -57,8 +61,7 @@ local local_pool = {
 
 
 
-function Time_To_Drop(future_time,h,m)
-    
+function Time_To_Drop(future_time,split)
     if(future_time == nil) then
         return nil
     else
@@ -69,7 +72,11 @@ function Time_To_Drop(future_time,h,m)
         if(seconds_left<10) then
             seconds_left = '0' .. seconds_left
         end
-        return string.format("%s:%s",tostring(minutes_left),tostring(seconds_left))
+        if(split) then
+            return minutes_left,seconds_left
+        else
+            return string.format("%s:%s",tostring(minutes_left),tostring(seconds_left))
+        end
     end
 end
 function Future_Time(futuretime)
@@ -116,6 +123,10 @@ function Draw_Box()
     local area = AshitaCore:GetResourceManager():GetString("areas",AshitaCore:GetDataManager():GetParty():GetMemberZone(0))
     local pool_box = AshitaCore:GetFontManager():Get('__pool_box');
     local box_text = string.format('|cFF00FF00|Loot Table - (|cFFFFFF00|%s|cFF00FF00|)', area)
+    if(pool_config.dyna_timer.active == true) then
+        box_text =box_text .. string.format('(%s)', tostring(Time_To_Drop(pool_config.dyna_timer.value)))
+    end
+    
     local playerEntity = GetPlayerEntity()
     if(playerEntity) then
 
@@ -231,15 +242,45 @@ if(GetPlayerEntity()) then
                 Index = struct.unpack('h', packet, 0x14+1)
             }
             if(packet_data.Item~=0) then
-           
                 Treasure_Time[packet_data.Index].ItemId = packet_data.Item
-
                 Treasure_Time[packet_data.Index].Time = os.time()
-                Treasure_Time[packet_data.Index].Drop_Time = os.time() + (5*61)
+                Treasure_Time[packet_data.Index].Drop_Time = os.time() + (5*60)
+                local h,m = Time_To_Drop(Treasure_Time[packet_data.Index].Drop_Time,true)
+                
             end
-            
         end
 
         return false
     end);
 end
+
+ashita.register_event('command', function(command, ntype)
+    local args = command:args();
+    if(args[1] == nil) then
+        return false;
+    end;
+    local cmd = args[1];
+    cmd = cmd:lower();
+    if(cmd == '/dt')then
+        if(args[2] == "start" )then
+            pool_config.dyna_timer.active = true
+            pool_config.dyna_timer.value = os.time() + (60*60)
+        end
+        if(args[2] == "stop" )then
+            pool_config.dyna_timer.active = false
+        end
+        if(args[2] == "reset" )then
+            pool_config.dyna_timer.value = os.time() + (60*60)
+        end
+        if(args[2] == "te" )then
+            if(args[3])then
+                local time_extension = tonumber(args[3])
+                if(type(time_extension) =="number")then
+                    print(time_extension)
+                    pool_config.dyna_timer.value = pool_config.dyna_timer.value + (time_extension*60)
+                end
+            end
+        end    
+    end
+    return false
+end);

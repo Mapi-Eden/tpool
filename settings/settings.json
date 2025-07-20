@@ -1,5 +1,8 @@
 {
-    "activeDyna": false,
+    "dyna_timer": {
+        "active": true,
+        "value": 1753058189
+    },
     "font": {
         "bgcolor": 2147483648,
         "bgvisible": true,
