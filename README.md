@@ -11,6 +11,15 @@ In Dynamis it will show relic armor slot & job.
 
 ![dyna](https://github.com/user-attachments/assets/32f7ba65-fd09-4d98-8208-220947628906)
 
+# T-Pool Timer 
+-/tp start - Starts 60 Minute Timer
+-/tp stop - Stops Timer
+-/tp reset - Resets Timer
+-/tp te MINUTES - Add Number of Minutes to Timer
+
+
+
+
 # TO-DO
 - [ ] Windower Support
 - [ ] Add item Timer. How long till item leaves pool

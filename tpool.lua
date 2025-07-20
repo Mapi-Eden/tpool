@@ -261,7 +261,7 @@ ashita.register_event('command', function(command, ntype)
     end;
     local cmd = args[1];
     cmd = cmd:lower();
-    if(cmd == '/dt')then
+    if(cmd == '/tp')then
         if(args[2] == "start" )then
             pool_config.dyna_timer.active = true
             pool_config.dyna_timer.value = os.time() + (60*60)
