@@ -1,6 +1,6 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.14.5'
+_addon.version = '5.0.14.6'
 
 
 print("Ashita")
@@ -289,9 +289,9 @@ ashita.register_event('command', function(command, ntype)
     if(cmd == '/tp')then
         if(args[2] == "start" )then
             local start_arg = args
-            local timer_sec = nil
-            local timer_min = nil
-            local timer_hour =nil
+            local timer_sec = 0
+            local timer_min = 0
+            local timer_hour =0
             local timer_total = 0
 
             table.remove(start_arg,1)
