@@ -1,11 +1,12 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.14.2'
+_addon.version = '5.0.14.3'
 
 if(ashita)then
     print("Ashita")
     require 'common'
     require 'core'
+    require 'stringex'
 end
 if(windower)then
     print("Windower")
@@ -124,7 +125,11 @@ function Draw_Box()
     local pool_box = AshitaCore:GetFontManager():Get('__pool_box');
     local box_text = string.format('|cFF00FF00|Loot Table - (|cFFFFFF00|%s|cFF00FF00|)', area)
     if(pool_config.dyna_timer.active == true) then
-        box_text =box_text .. string.format('(%s)', tostring(Time_To_Drop(pool_config.dyna_timer.value)))
+        if(pool_config.dyna_timer.value ~= 0) then
+        box_text =box_text .. string.format('(|cFFca03fc| %s|cFF98f542| )', tostring(Time_To_Drop(pool_config.dyna_timer.value)))
+        else
+            pool_config.dyna_timer.active = false
+        end
     end
     
     local playerEntity = GetPlayerEntity()
@@ -291,14 +296,58 @@ ashita.register_event('command', function(command, ntype)
     cmd = cmd:lower();
     if(cmd == '/tp')then
         if(args[2] == "start" )then
-            pool_config.dyna_timer.active = true
-            pool_config.dyna_timer.value = os.time() + (60*60)
+            local start_arg = args
+            local timer_sec = nil
+            local timer_min = nil
+            local timer_hour =nil
+            local timer_total = 0
+
+            table.remove(start_arg,1)
+            table.remove(start_arg,1)
+            for i = 1, #start_arg, 1 do
+                local tmp_len = nil    
+                if(string.contains(start_arg[i],"h"))then
+                    tmp_len =string.len(start_arg[i])
+                    timer_hour = string.remove(start_arg[i],tmp_len)
+                    
+                end
+                if(string.contains(start_arg[i],"m"))then
+                    tmp_len =string.len(start_arg[i])
+                    timer_min = string.remove(start_arg[i],tmp_len)
+                end
+                if(string.contains(start_arg[i],"s"))then
+                    tmp_len =string.len(start_arg[i])
+                    timer_sec = string.remove(start_arg[i],tmp_len)
+                end
+                
+                
+            end
+            
+            if(timer_hour ~= nil)then
+                timer_total = timer_total + (timer_hour*3600)
+            end
+            if(timer_min ~= nil)then
+                timer_total = timer_total + (timer_min*60)
+            end
+            if(timer_sec ~= nil)then
+                timer_total = timer_total + (timer_sec)
+            end
+            
+            if(timer_total~=0)then
+                print(string.format("Timer started: %i Hour %i Min %i Sec",timer_hour,timer_min,timer_sec))
+                pool_config.dyna_timer.value = os.time() + timer_total
+                pool_config.dyna_timer.active = true
+            else
+                print("Timer Started: 1 Hour")
+                pool_config.dyna_timer.active = true
+                pool_config.dyna_timer.value = os.time() + (60*60)
+            end
+        
+            
         end
         if(args[2] == "stop" )then
             pool_config.dyna_timer.active = false
-        end
-        if(args[2] == "reset" )then
-            pool_config.dyna_timer.value = os.time() + (60*60)
+            pool_config.dyna_timer.value = 0
         end
         if(args[2] == "te" )then
             if(args[3])then
