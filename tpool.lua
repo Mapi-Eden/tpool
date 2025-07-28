@@ -1,6 +1,6 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.14.8'
+_addon.version = '5.0.14.9'
 
 require 'common'
 require 'core'
@@ -65,13 +65,27 @@ function Time_To_Drop(future_time,split)
         local minutes_left = math.floor(time_to_drop % 3600 / 60)
         local seconds_left = time_to_drop % 60
         
-        if(seconds_left<10) then
+        --[[if(seconds_left<10) then
             seconds_left = '0' .. seconds_left
         end
+        if(minutes_left<10) then
+            minutes_left = '0' .. minutes_left
+        end
+        if(hours_left<10) then
+            hours_left = '0' .. hours_left
+        end]]--
         if(split) then
             return hours_left,minutes_left,seconds_left
         else
-            return string.format("%s:%s:%s",tostring(hours_left),tostring(minutes_left),tostring(seconds_left))
+            if(hours_left > 0) then
+                return string.format("%02d:%02d:%02d",hours_left,(minutes_left),(seconds_left))
+            end
+            if(minutes_left > 0) then
+                return string.format("%02d:%02d",(minutes_left),(seconds_left))
+            end
+            if(seconds_left > 0) then
+                return string.format("%02d",(seconds_left))
+            end
         end
     end
 end
@@ -121,7 +135,7 @@ function Draw_Box()
     local box_text = string.format('|cFF00FF00|Loot Table - (|cFFFFFF00|%s|cFF00FF00|)', area)
     if(pool_config.dyna_timer.active == true) then
         if(pool_config.dyna_timer.value ~= 0) then
-        box_text =box_text .. string.format('(|cFFca03fc| %s|cFF98f542| )', tostring(Time_To_Drop(pool_config.dyna_timer.value)))
+        box_text =box_text .. string.format('(|cFFca03fc| %s |cFF98f542| )', (Time_To_Drop(pool_config.dyna_timer.value)))
         else
             pool_config.dyna_timer.active = false
         end
@@ -238,7 +252,7 @@ if(GetPlayerEntity()) then
                 Dropper_Index = struct.unpack('H', packet, 0x12),
                 Index = struct.unpack('h', packet, 0x14+1)
             }
-            if(packet_data.Item~=0) then
+            if(packet_data.Item~=0 and packet_data.Index < 10) then
                 Treasure_Time[packet_data.Index].ItemId = packet_data.Item
                 Treasure_Time[packet_data.Index].Time = os.time()
                 Treasure_Time[packet_data.Index].Drop_Time = os.time() + (5*60)
