@@ -1,6 +1,6 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.14.6'
+_addon.version = '5.0.14.7'
 
 
 print("Ashita")
@@ -252,6 +252,7 @@ if(GetPlayerEntity()) then
                 Actor = struct.unpack('I', packet, 0x04),
                 Target = struct.unpack('I', packet, 0x08),
                 Param_1 = struct.unpack('I', packet, 0x0C +1),
+                
                 Param_2 = struct.unpack('I', packet, 0x10 +1),
                 Actor_Index = struct.unpack('H', packet,0x14 ),
                 Target_Index = struct.unpack('H', packet,0x16 ),
@@ -265,10 +266,10 @@ if(GetPlayerEntity()) then
                 end
             end
             
-
+            --Dynamis 10/5/3 minute warning
             if(pack_data.Message == 449) then
                 if(pool_config.dyna_timer.active == true) then
-                    pool_config.dyna_timer.value = pack_data.Param_1*60
+                    pool_config.dyna_timer.value =  os.time() + pack_data.Param_1 * 60
                 end
             end
             pack_data = nil
