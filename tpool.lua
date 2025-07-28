@@ -1,9 +1,7 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.14.7'
+_addon.version = '5.0.14.8'
 
-
-print("Ashita")
 require 'common'
 require 'core'
 require 'stringex'
@@ -63,15 +61,17 @@ function Time_To_Drop(future_time,split)
     else
         local current_time = os.time()
         local time_to_drop = future_time - current_time
-        local minutes_left = math.floor(time_to_drop / 60)
+        local hours_left = math.floor(time_to_drop / 3600)
+        local minutes_left = math.floor(time_to_drop % 3600 / 60)
         local seconds_left = time_to_drop % 60
+        
         if(seconds_left<10) then
             seconds_left = '0' .. seconds_left
         end
         if(split) then
-            return minutes_left,seconds_left
+            return hours_left,minutes_left,seconds_left
         else
-            return string.format("%s:%s",tostring(minutes_left),tostring(seconds_left))
+            return string.format("%s:%s:%s",tostring(hours_left),tostring(minutes_left),tostring(seconds_left))
         end
     end
 end
@@ -299,16 +299,16 @@ ashita.register_event('command', function(command, ntype)
             table.remove(start_arg,1)
             for i = 1, #start_arg, 1 do
                 local tmp_len = nil    
-                if(string.contains(start_arg[i],"h"))then
+                if(string.contains(start_arg[i],"h") or string.contains(start_arg[i],"H") )then
                     tmp_len =string.len(start_arg[i])
                     timer_hour = string.remove(start_arg[i],tmp_len)
                     
                 end
-                if(string.contains(start_arg[i],"m"))then
+                if(string.contains(start_arg[i],"m") or string.contains(start_arg[i],"M"))then
                     tmp_len =string.len(start_arg[i])
                     timer_min = string.remove(start_arg[i],tmp_len)
                 end
-                if(string.contains(start_arg[i],"s"))then
+                if(string.contains(start_arg[i],"s") or string.contains(start_arg[i],"S"))then
                     tmp_len =string.len(start_arg[i])
                     timer_sec = string.remove(start_arg[i],tmp_len)
                 end
@@ -326,14 +326,17 @@ ashita.register_event('command', function(command, ntype)
                 timer_total = timer_total + (timer_sec)
             end
             
-            if(timer_total~=0)then
+            if(timer_total ~= 0)then
                 print(string.format("Timer started: %i Hour %i Min %i Sec",timer_hour,timer_min,timer_sec))
+                print(timer_total)
                 pool_config.dyna_timer.value = os.time() + timer_total
                 pool_config.dyna_timer.active = true
             else
-                print("Timer Started: 1 Hour")
+                
+                print("Default Timer Started: 1 Hour")
                 pool_config.dyna_timer.active = true
                 pool_config.dyna_timer.value = os.time() + (60*60)
+                
             end
         
             
