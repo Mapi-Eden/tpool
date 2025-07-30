@@ -1,6 +1,6 @@
 _addon.name = 'Treasure Pool'
 _addon.author = 'Maptwo'
-_addon.version = '5.0.14.9'
+_addon.version = '5.0.14.10'
 
 require 'common'
 require 'core'
@@ -134,8 +134,14 @@ function Draw_Box()
     local pool_box = AshitaCore:GetFontManager():Get('__pool_box');
     local box_text = string.format('|cFF00FF00|Loot Table - (|cFFFFFF00|%s|cFF00FF00|)', area)
     if(pool_config.dyna_timer.active == true) then
-        if(pool_config.dyna_timer.value ~= 0) then
-        box_text =box_text .. string.format('(|cFFca03fc| %s |cFF98f542| )', (Time_To_Drop(pool_config.dyna_timer.value)))
+        if(pool_config.dyna_timer.value > 0) then
+            local timer_time = Time_To_Drop(pool_config.dyna_timer.value)
+            if(timer_time ~= nil) then
+                box_text = box_text .. string.format('(|cFFca03fc|%s|cFF98f542|)', timer_time)
+            else
+                pool_config.dyna_timer.active = false
+                pool_config.dyna_timer.value = 0
+            end
         else
             pool_config.dyna_timer.active = false
         end
@@ -342,7 +348,6 @@ ashita.register_event('command', function(command, ntype)
             
             if(timer_total ~= 0)then
                 print(string.format("Timer started: %i Hour %i Min %i Sec",timer_hour,timer_min,timer_sec))
-                print(timer_total)
                 pool_config.dyna_timer.value = os.time() + timer_total
                 pool_config.dyna_timer.active = true
             else
